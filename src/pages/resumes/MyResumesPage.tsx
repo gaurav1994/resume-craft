@@ -57,7 +57,7 @@ function MyResumesPage() {
                   <p className={`${styles.meta} flex items-center gap-1`}><CalendarDays size={12} aria-hidden="true" /> {resume.updated}</p>
                   <div className={styles.actions}>
                     <Link className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-[#2f273d] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#51409a]" to={`/resumes/${resume.id}/edit`}><Pencil size={13} aria-hidden="true" /> Edit</Link>
-                    <button className="inline-flex items-center justify-center rounded-md border border-[#e4e0eb] bg-white px-3 py-2 text-[#7657d8] transition hover:bg-[#f2effb]" type="button" aria-label={`Preview ${resume.title}`}><Eye size={15} aria-hidden="true" /></button>
+                    <Link className="inline-flex items-center justify-center rounded-md border border-[#e4e0eb] bg-white px-3 py-2 text-[#7657d8] transition hover:bg-[#f2effb]" to={`/resumes/${resume.id}/view`} aria-label={`View ${resume.title}`}><Eye size={15} aria-hidden="true" /></Link>
                     <button className="inline-flex items-center justify-center rounded-md border border-[#e4e0eb] bg-white px-3 py-2 text-[#a87883] transition hover:bg-[#fff3f4]" type="button" aria-label={`Delete ${resume.title}`}><Trash2 size={15} aria-hidden="true" /></button>
                   </div>
                 </div>

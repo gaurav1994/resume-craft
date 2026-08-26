@@ -1,0 +1,49 @@
+.page {
+  min-height: calc(100vh - 99px);
+  padding: 72px 32px 120px;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(212, 250, 211, 0.55), transparent 28%),
+    radial-gradient(circle at 88% 80%, rgba(255, 226, 198, 0.5), transparent 28%),
+    #faf9fc;
+}
+
+.canvas {
+  width: min(100%, 900px);
+  margin: 0 auto;
+  padding: clamp(24px, 6vw, 62px);
+  background: #fff;
+  border: 1px solid #d9e1dc;
+  border-radius: 18px;
+  box-shadow: 0 24px 55px rgba(24, 35, 43, 0.12);
+}
+
+.identity {
+  padding: 24px 26px;
+  background: #18232b;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.identity h2 {
+  margin: 0;
+  color: #fff;
+  font-family: Georgia, serif;
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1;
+}
+
+.identity p {
+  margin-top: 9px;
+  color: #f2a38f;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+
+.emptyState {
+  padding: 28px 0;
+  color: #71807a;
+  font-size: 15px;
+  line-height: 1.7;
+}
