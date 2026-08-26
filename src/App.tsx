@@ -7,6 +7,7 @@ import PlaceholderPage from './components/placeholder/PlaceholderPage'
 import MyResumesPage from './pages/resumes/MyResumesPage'
 import ResumeBuilderPage from './pages/resume-builder/ResumeBuilderPage'
 
+
 function App() {
   return (
     <div className="app-shell">
@@ -14,9 +15,9 @@ function App() {
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/resumes" element={<MyResumesPage />} />
-        <Route path="/resumes/:resumeId/edit" element={<ResumeBuilderPage />} />
+        <Route path="/resumes/:resumeId/edit" element={<ResumeBuilderPage mode='edit' />} />
         <Route path="/templates" element={<PlaceholderPage icon={LayoutTemplate} title="Templates" description="Explore a growing collection of thoughtful resume templates for every kind of career story." />} />
-        <Route path="/create" element={<ResumeBuilderPage />} />
+        <Route path="/create" element={<ResumeBuilderPage mode='create' />} />
         <Route path="*" element={<DashboardPage />} />
       </Routes>
     </div>

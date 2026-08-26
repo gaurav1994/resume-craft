@@ -1,6 +1,6 @@
 import { ArrowLeft, Check, FileText, Save } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import BuilderSidebar from "../../components/resume-builder/BuilderSidebar";
 import styles from "./ResumeBuilderPage.module.css";
@@ -12,6 +12,7 @@ import {
 } from "../resumes/resumeStore";
 
 type BuilderValues = Pick<Resume,"title" | "role" | "fullName" | "email" | "phone" | "location" | "summary">;
+type ResumeBuilderPageProps = Readonly<{ mode?: "create" | "edit" }>;
 
 const blankResume: BuilderValues = {
     title: "My new resume",
@@ -24,17 +25,17 @@ const blankResume: BuilderValues = {
         "A concise introduction that connects your experience to the role you want next.",
 };
 
-function ResumeBuilderPage() {
+function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     const { resumeId } = useParams();
     const navigate = useNavigate();
-    const existingResume = resumeId ? getResumes().find((item) => item.id === Number(resumeId)) : undefined;
-    const initialValues = existingResume ?? (resumeId ? undefined : blankResume);
+    const existingResume = mode === "edit" && resumeId ? getResumes().find((item) => item.id === Number(resumeId)) : undefined;
+    const initialValues = existingResume ?? (mode === "create" ? blankResume : undefined);
     const [activeSection, setActiveSection] = useState("Basics");
     const [saved, setSaved] = useState(false);
-    const {register, watch, handleSubmit, formState: { errors },} = useForm<BuilderValues>({ defaultValues: initialValues });
-    const values = watch();
+    const { control, register, handleSubmit, formState: { errors },} = useForm<BuilderValues>({ defaultValues: initialValues });
+    const values = useWatch({ control });
 
-    if (resumeId && !existingResume) {
+    if (mode === "edit" && resumeId && !existingResume) {
         return (
             <main className={styles.page}>
                 <div className="mx-auto max-w-[1180px]">
@@ -87,9 +88,9 @@ function ResumeBuilderPage() {
                             <FileText size={17} />
                         </div>
                         <div>
-                            <h1 className={styles.title}>Resume builder</h1>
+                            <h1 className={styles.title}>{mode === "create" ? "Create a resume" : "Resume builder"}</h1>
                             <p className={styles.subtitle}>
-                                Shape a version that sounds like you
+                                {mode === "create" ? "Start with a template built around your story" : "Shape a version that sounds like you"}
                             </p>
                         </div>
                     </div>
