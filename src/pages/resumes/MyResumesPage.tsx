@@ -2,19 +2,7 @@ import { CalendarDays, Eye, FileText, Pencil, Plus, Search, Trash2 } from 'lucid
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styles from './MyResumesPage.module.css'
-
-type Resume = {
-  id: number
-  title: string
-  role: string
-  updated: string
-}
-
-const resumes: Resume[] = [
-  { id: 1, title: 'Frontend Developer Resume', role: 'Software Engineering', updated: 'Updated today' },
-  { id: 2, title: 'Product Designer Resume', role: 'Design & Creative', updated: 'Updated 4 days ago' },
-  { id: 3, title: 'General Resume', role: 'Open to opportunities', updated: 'Updated 2 weeks ago' },
-]
+import { getResumes, type Resume } from './resumeStore'
 
 function ResumePreview() {
   return (
@@ -32,6 +20,7 @@ function ResumePreview() {
 
 function MyResumesPage() {
   const [query, setQuery] = useState('')
+  const [resumes] = useState<Resume[]>(() => getResumes())
   const visibleResumes = resumes.filter((resume) => `${resume.title} ${resume.role}`.toLowerCase().includes(query.toLowerCase()))
 
   return (
@@ -67,7 +56,7 @@ function MyResumesPage() {
                   <p className={styles.meta}>{resume.role}</p>
                   <p className={`${styles.meta} flex items-center gap-1`}><CalendarDays size={12} aria-hidden="true" /> {resume.updated}</p>
                   <div className={styles.actions}>
-                    <Link className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-[#2f273d] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#51409a]" to="/create"><Pencil size={13} aria-hidden="true" /> Edit</Link>
+                    <Link className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-[#2f273d] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#51409a]" to={`/resumes/${resume.id}/edit`}><Pencil size={13} aria-hidden="true" /> Edit</Link>
                     <button className="inline-flex items-center justify-center rounded-md border border-[#e4e0eb] bg-white px-3 py-2 text-[#7657d8] transition hover:bg-[#f2effb]" type="button" aria-label={`Preview ${resume.title}`}><Eye size={15} aria-hidden="true" /></button>
                     <button className="inline-flex items-center justify-center rounded-md border border-[#e4e0eb] bg-white px-3 py-2 text-[#a87883] transition hover:bg-[#fff3f4]" type="button" aria-label={`Delete ${resume.title}`}><Trash2 size={15} aria-hidden="true" /></button>
                   </div>
