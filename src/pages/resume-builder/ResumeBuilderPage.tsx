@@ -11,7 +11,7 @@ import {
     type Resume,
 } from "../resumes/resumeStore";
 
-type BuilderValues = Pick<Resume,"title" | "role" | "fullName" | "email" | "phone" | "location" | "summary">;
+type BuilderValues = Pick<Resume,"title" | "role" | "fullName" | "email" | "phone" | "location"> & { summary: string };
 type ResumeBuilderPageProps = Readonly<{ mode?: "create" | "edit" }>;
 
 const blankResume: BuilderValues = {
@@ -29,7 +29,12 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     const { resumeId } = useParams();
     const navigate = useNavigate();
     const existingResume = mode === "edit" && resumeId ? getResumes().find((item) => item.id === Number(resumeId)) : undefined;
-    const initialValues = existingResume ?? (mode === "create" ? blankResume : undefined);
+    let initialValues: BuilderValues | undefined;
+    if (existingResume) {
+        initialValues = { ...existingResume, summary: existingResume.summary.profSummary };
+    } else if (mode === "create") {
+        initialValues = blankResume;
+    }
     const [activeSection, setActiveSection] = useState("Basics");
     const [saved, setSaved] = useState(false);
     const { control, register, handleSubmit, formState: { errors },} = useForm<BuilderValues>({ defaultValues: initialValues });
@@ -38,7 +43,7 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     if (mode === "edit" && resumeId && !existingResume) {
         return (
             <main className={styles.page}>
-                <div className="mx-auto max-w-[1180px]">
+                <div className="mx-auto max-w-295">
                     <p className="eyebrow">ResumeCraft</p>
                     <h1 className="font-serif text-5xl font-bold text-[#18232b]">
                         Resume not found
@@ -63,9 +68,24 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                 ...defaultResumes.map((item) => item.id),
             ) + 1;
         const nextResume: Resume = {
+            ...(existingResume ?? defaultResumes[0]),
             ...formValues,
             id,
             updated: "Updated just now",
+            currentRole: formValues.role,
+            contactInformation: {
+                ...(existingResume?.contactInformation ?? defaultResumes[0].contactInformation),
+                firstName: formValues.fullName.split(" ")[0] ?? formValues.fullName,
+                lastName: formValues.fullName.split(" ").slice(1).join(" "),
+                email: formValues.email,
+                phone: formValues.phone,
+                address: formValues.location,
+            },
+            summary: {
+                ...(existingResume?.summary ?? defaultResumes[0].summary),
+                profSummary: formValues.summary,
+            },
+            experience: existingResume?.experience ?? [],
         };
         saveResumes(
             existingResume

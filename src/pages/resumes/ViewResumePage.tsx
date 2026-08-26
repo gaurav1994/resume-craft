@@ -13,7 +13,7 @@ function ViewResumePage() {
   if (!resume) {
     return (
       <main className={styles.page}>
-        <div className="mx-auto max-w-[900px]">
+        <div className="mx-auto max-w-225">
           <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[1.8px] text-[#d97964]">ResumeCraft</p>
           <h1 className="font-serif text-5xl font-bold text-[#18232b]">Resume not found</h1>
           <Link className="mt-8 inline-flex items-center gap-2 rounded-lg bg-[#18232b] px-5 py-3 text-sm font-bold text-white" to="/resumes"><ArrowLeft size={16} /> Back to resumes</Link>
@@ -33,10 +33,10 @@ function ViewResumePage() {
         <ResumeContactBlock resume={resume} />
         <div>
           <ResumeViewSection title="Profile">
-            <p className="max-w-[680px] text-[15px] leading-7 text-[#66756f]">{resume.summary || 'Add a professional summary to introduce your experience and the value you bring.'}</p>
+            <p className="max-w-170 text-[15px] leading-7 text-[#66756f]">{resume.summary.profSummary || 'Add a professional summary to introduce your experience and the value you bring.'}</p>
           </ResumeViewSection>
           <ResumeViewSection title="Experience">
-            <div className="flex gap-4"><BriefcaseBusiness className="mt-1 shrink-0 text-[#d97964]" size={18} /><div><h3 className="m-0 text-sm font-extrabold text-[#18232b]">Your next opportunity</h3><p className="mt-2 text-sm leading-6 text-[#71807a]">Add your most relevant experience from the builder to complete this section.</p></div></div>
+            <div className="space-y-5">{resume.experience.length > 0 ? resume.experience.map((item) => <div className="flex gap-4" key={`${item.company}-${item.date}`}><BriefcaseBusiness className="mt-1 shrink-0 text-[#d97964]" size={18} /><div><h3 className="m-0 text-sm font-extrabold text-[#18232b]">{item.designation}</h3><p className="mt-1 text-xs font-bold text-[#d97964]">{item.company} · {item.date}</p><p className="mt-2 text-sm leading-6 text-[#71807a]">{item.details}</p></div></div>) : <p className="text-sm leading-6 text-[#71807a]">Add your most relevant experience from the builder to complete this section.</p>}</div>
           </ResumeViewSection>
           <ResumeViewSection title="Education">
             <div className="flex gap-4"><GraduationCap className="mt-1 shrink-0 text-[#d97964]" size={18} /><div><h3 className="m-0 text-sm font-extrabold text-[#18232b]">Education and learning</h3><p className="mt-2 text-sm leading-6 text-[#71807a]">Highlight the education, certifications, and learning that support your story.</p></div></div>
