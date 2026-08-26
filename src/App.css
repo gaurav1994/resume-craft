@@ -1,0 +1,54 @@
+.app-shell {
+	min-height: 100vh;
+	color: #2f273d;
+	background:
+		radial-gradient(circle at 12% 18%, rgba(212, 250, 211, 0.7), transparent 30%),
+		radial-gradient(circle at 88% 72%, rgba(255, 226, 198, 0.62), transparent 30%),
+		#faf9fc;
+}
+
+.app-content {
+	width: min(100% - 64px, 1180px);
+	margin: 0 auto;
+	padding: 128px 8px 160px;
+}
+
+.eyebrow {
+	margin-bottom: 18px;
+	color: #7657d8;
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 1.5px;
+	text-transform: uppercase;
+}
+
+.app-content h1 {
+	max-width: 700px;
+	margin: 0;
+	color: #2f273d;
+	font-family: Georgia, serif;
+	font-size: clamp(48px, 7vw, 88px);
+	font-weight: 700;
+	letter-spacing: -3px;
+	line-height: 0.98;
+}
+
+.app-intro {
+	max-width: 430px;
+	margin-top: 26px;
+	color: #777184;
+	font-size: 17px;
+	line-height: 1.6;
+}
+
+@media (max-width: 780px) {
+	.app-content {
+		width: min(100% - 32px, 1180px);
+		padding-top: 90px;
+	}
+
+	.app-content h1 {
+		font-size: clamp(46px, 14vw, 68px);
+		letter-spacing: -2px;
+	}
+}
