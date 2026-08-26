@@ -1,0 +1,25 @@
+.heading {
+  max-width: 700px;
+  margin: 0;
+  color: #2f273d;
+  font-family: Georgia, serif;
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 700;
+  letter-spacing: -3px;
+  line-height: 0.98;
+}
+
+.intro {
+  max-width: 430px;
+  margin-top: 26px;
+  color: #777184;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+@media (max-width: 780px) {
+  .heading {
+    font-size: clamp(46px, 14vw, 68px);
+    letter-spacing: -2px;
+  }
+}

@@ -1,4 +1,4 @@
-.navbar-shell {
+.shell {
   padding: 24px 32px 0;
 }
 
@@ -17,7 +17,7 @@
   backdrop-filter: blur(16px);
 }
 
-.navbar-brand {
+.brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -26,7 +26,7 @@
   white-space: nowrap;
 }
 
-.brand-mark {
+.brandMark {
   display: grid;
   width: 38px;
   height: 38px;
@@ -37,25 +37,23 @@
   font-family: Georgia, serif;
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0;
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.14);
 }
 
-.brand-name {
+.brandName {
   font-family: Georgia, serif;
   font-size: 19px;
   font-weight: 700;
-  letter-spacing: 0;
 }
 
-.navbar-links {
+.links {
   display: flex;
   align-items: center;
   gap: 4px;
   margin-left: auto;
 }
 
-.navbar-link {
+.link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -64,29 +62,28 @@
   border-radius: 9px;
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0;
   text-decoration: none;
   transition: color 160ms ease, background 160ms ease;
 }
 
-.navbar-link:hover,
-.navbar-link.is-active {
+.link:hover,
+.active {
   color: #51409a;
   background: #f2effb;
 }
 
-.navbar-link-mobile-action,
-.menu-button {
+.mobileAction,
+.menuButton {
   display: none;
 }
 
-.navbar-actions {
+.actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.create-button {
+.createButton {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -96,18 +93,17 @@
   border-radius: 9px;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0;
   text-decoration: none;
   transition: background 160ms ease, transform 160ms ease;
 }
 
-.create-button:hover {
+.createButton:hover {
   background: #51409a;
   transform: translateY(-1px);
 }
 
 @media (max-width: 780px) {
-  .navbar-shell {
+  .shell {
     padding: 16px 16px 0;
   }
 
@@ -117,19 +113,19 @@
     padding: 0 10px 0 14px;
   }
 
-  .brand-name {
+  .brandName {
     font-size: 17px;
   }
 
-  .navbar-actions {
+  .actions {
     margin-left: auto;
   }
 
-  .create-button {
+  .createButton {
     display: none;
   }
 
-  .menu-button {
+  .menuButton {
     display: grid;
     width: 40px;
     height: 40px;
@@ -142,7 +138,7 @@
     cursor: pointer;
   }
 
-  .navbar-links {
+  .links {
     position: absolute;
     z-index: 2;
     top: calc(100% + 8px);
@@ -152,21 +148,22 @@
     padding: 8px;
     flex-direction: column;
     align-items: stretch;
+    margin-left: 0;
     background: #fff;
     border: 1px solid #e8e4ef;
     border-radius: 12px;
     box-shadow: 0 16px 30px rgba(59, 42, 89, 0.12);
   }
 
-  .navbar-links.is-open {
+  .open {
     display: flex;
   }
 
-  .navbar-link {
+  .link {
     padding: 12px;
   }
 
-  .navbar-link-mobile-action {
+  .mobileAction {
     display: inline-flex;
   }
 }
