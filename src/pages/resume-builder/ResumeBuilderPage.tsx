@@ -1,6 +1,6 @@
-import { ArrowLeft, Check, FileText, Save } from "lucide-react";
+import { ArrowLeft, Check, FileText, Plus, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, useFieldArray } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import BuilderSidebar from "../../components/resume-builder/BuilderSidebar";
 import styles from "./ResumeBuilderPage.module.css";
@@ -11,18 +11,16 @@ import {
     type Resume,
 } from "../resumes/resumeStore";
 
-type BuilderValues = Pick<Resume,"title" | "role" | "fullName" | "email" | "phone" | "location"> & { summary: string };
+type BuilderValues = Pick<Resume, "title" | "contactInformation" | "summary" | "experience" | "currentRole" | "updated">;
 type ResumeBuilderPageProps = Readonly<{ mode?: "create" | "edit" }>;
 
 const blankResume: BuilderValues = {
     title: "My new resume",
-    role: "Your professional title",
-    fullName: "Your Name",
-    email: "you@example.com",
-    phone: "+91 00000 00000",
-    location: "Your city",
-    summary:
-        "A concise introduction that connects your experience to the role you want next.",
+    currentRole: "Your professional title",
+    updated: "Not saved yet",
+    contactInformation: { firstName: "Your", lastName: "Name", email: "you@example.com", phone: "+91 00000 00000", website: "", address: "Your city" },
+    summary: { headline: "A clear headline for your career story", profSummary: "A concise introduction that connects your experience to the role you want next." },
+    experience: [],
 };
 
 function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
@@ -31,7 +29,7 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     const existingResume = mode === "edit" && resumeId ? getResumes().find((item) => item.id === Number(resumeId)) : undefined;
     let initialValues: BuilderValues | undefined;
     if (existingResume) {
-        initialValues = { ...existingResume, summary: existingResume.summary.profSummary };
+        initialValues = existingResume;
     } else if (mode === "create") {
         initialValues = blankResume;
     }
@@ -39,6 +37,10 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     const [saved, setSaved] = useState(false);
     const { control, register, handleSubmit, formState: { errors },} = useForm<BuilderValues>({ defaultValues: initialValues });
     const values = useWatch({ control });
+    const { fields, append, remove } = useFieldArray({
+        name: "experience",
+        control,
+    });
 
     if (mode === "edit" && resumeId && !existingResume) {
         return (
@@ -60,6 +62,8 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     }
 
     const onSubmit = (formValues: BuilderValues) => {
+        console.log(formValues);
+        
         const current = getResumes();
         const id =
             existingResume?.id ??
@@ -72,20 +76,11 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
             ...formValues,
             id,
             updated: "Updated just now",
-            currentRole: formValues.role,
-            contactInformation: {
-                ...(existingResume?.contactInformation ?? defaultResumes[0].contactInformation),
-                firstName: formValues.fullName.split(" ")[0] ?? formValues.fullName,
-                lastName: formValues.fullName.split(" ").slice(1).join(" "),
-                email: formValues.email,
-                phone: formValues.phone,
-                address: formValues.location,
-            },
-            summary: {
-                ...(existingResume?.summary ?? defaultResumes[0].summary),
-                profSummary: formValues.summary,
-            },
-            experience: existingResume?.experience ?? [],
+            fullName: `${formValues.contactInformation.firstName} ${formValues.contactInformation.lastName}`.trim(),
+            role: formValues.currentRole,
+            email: formValues.contactInformation.email,
+            phone: formValues.contactInformation.phone,
+            location: formValues.contactInformation.address,
         };
         saveResumes(
             existingResume
@@ -155,7 +150,7 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                                 story.
                             </p>
                         </div>
-                        {activeSection === "Basics" ? (
+                        {activeSection === "Basics" && (
                             <div className={`${styles.formFields} space-y-5`}>
                                 <label className="block">
                                     <span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">
@@ -175,14 +170,14 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                                     <span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">
                                         Professional title
                                     </span>
-                                    <input className={fieldClass} {...register("role")} />
+                                    <input className={fieldClass} {...register("currentRole")} />
                                 </label>
                                 <div className="grid gap-5 sm:grid-cols-2">
                                     <label className="block">
                                         <span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">
                                             Full name
                                         </span>
-                                        <input className={fieldClass} {...register("fullName")} />
+                                        <input className={fieldClass} {...register("contactInformation.firstName")} />
                                     </label>
                                     <label className="block">
                                         <span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">
@@ -191,20 +186,20 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                                         <input
                                             className={fieldClass}
                                             type="email"
-                                            {...register("email")}
+                                            {...register("contactInformation.email")}
                                         />
                                     </label>
                                     <label className="block">
                                         <span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">
                                             Phone
                                         </span>
-                                        <input className={fieldClass} {...register("phone")} />
+                                        <input className={fieldClass} {...register("contactInformation.phone")} />
                                     </label>
                                     <label className="block">
                                         <span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">
                                             Location
                                         </span>
-                                        <input className={fieldClass} {...register("location")} />
+                                        <input className={fieldClass} {...register("contactInformation.address")} />
                                     </label>
                                 </div>
                                 <label className="block">
@@ -213,35 +208,73 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                                     </span>
                                     <textarea
                                         className="min-h-32 w-full resize-y rounded-lg border border-[#d5dfda] bg-white px-3 py-3 text-sm leading-6 text-[#18232b] outline-none transition focus:border-[#e07f6c] focus:ring-4 focus:ring-[#e07f6c]/10"
-                                        {...register("summary")}
+                                        {...register("summary.profSummary")}
                                     />
                                 </label>
                             </div>
-                        ) : (
-                            <div className="mt-8 rounded-xl border border-dashed border-[#d5dfda] bg-white px-5 py-8">
-                                <p className="text-sm font-bold text-[#18232b]">
-                                    {activeSection} fields are ready to add.
-                                </p>
-                                <p className="mt-2 text-sm leading-6 text-[#798582]">
-                                    Choose Basics to update the resume identity, or save this
-                                    template and continue expanding this section next.
-                                </p>
+                        )}
+                        {activeSection==="Summary" && 
+                            <div className={`${styles.formFields} space-y-5`}>
+                                <label className="block">
+                                    <span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">
+                                        Headline
+                                    </span>
+                                    <input type="text"
+                                        className={fieldClass}
+                                        {...register("summary.headline", { required: "Add a professional headline" })}
+                                    />
+                                    {errors.summary?.headline ? (
+                                        <small className="mt-1 block text-xs text-red-600">
+                                            {errors.summary.headline.message}
+                                        </small>
+                                    ) : null}
+                                </label>
+                                <label className="block">
+                                    <span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">
+                                        Professional summary
+                                    </span>
+                                    <textarea
+                                        className="min-h-32 w-full resize-y rounded-lg border border-[#d5dfda] bg-white px-3 py-3 text-sm leading-6 text-[#18232b] outline-none transition focus:border-[#e07f6c] focus:ring-4 focus:ring-[#e07f6c]/10"
+                                        {...register("summary.profSummary")}
+                                    />
+                                </label>
+                            </div>
+                        }
+
+                        {activeSection === "Experience" && (
+                            <div className={`${styles.formFields} space-y-5`}>
+                                {fields.map((field, index) => (
+                                    <fieldset className="rounded-xl border border-[#d5dfda] bg-white p-5" key={field.id}>
+                                        <div className="mb-4 flex items-center justify-between gap-3">
+                                            <legend className="text-sm font-extrabold text-[#18232b]">Experience {index + 1}</legend>
+                                            <button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold text-[#b75545] hover:bg-[#fbe8e2]" type="button" onClick={() => remove(index)}><Trash2 size={13} /> Remove</button>
+                                        </div>
+                                        <div className="grid gap-4 sm:grid-cols-2">
+                                            <label className="block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Company</span><input className={fieldClass} placeholder="Company name" {...register(`experience.${index}.company`)} /></label>
+                                            <label className="block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Designation</span><input className={fieldClass} placeholder="Your role" {...register(`experience.${index}.designation`)} /></label>
+                                            <label className="block sm:col-span-2"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Dates</span><input className={fieldClass} placeholder="Jan 2024 to Present" {...register(`experience.${index}.date`)} /></label>
+                                        </div>
+                                        <label className="mt-4 block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">What did you accomplish?</span><textarea className="min-h-24 w-full resize-y rounded-lg border border-[#d5dfda] bg-white px-3 py-3 text-sm leading-6 text-[#18232b] outline-none transition focus:border-[#e07f6c] focus:ring-4 focus:ring-[#e07f6c]/10" placeholder="Describe your impact and responsibilities" {...register(`experience.${index}.details`)} /></label>
+                                    </fieldset>
+                                ))}
+                                <button className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#e07f6c] px-4 py-3 text-sm font-extrabold text-[#c86d5c] transition hover:bg-[#fff4f1]" type="button" onClick={() => append({ company: "", designation: "", date: "", details: "" })}><Plus size={16} /> Add experience</button>
+                                {fields.length === 0 && <p className="text-sm text-[#798582]">No experience added yet. Start with your most recent role.</p>}
                             </div>
                         )}
                     </form>
                     <aside className={styles.previewPane}>
                         <p className={styles.previewLabel}>Live template preview</p>
                         <div className={styles.preview}>
-                            <h2>{values.fullName || "Your Name"}</h2>
-                            <h3>{values.role || "Professional title"}</h3>
+                            <h2>{`${values.contactInformation?.firstName ?? "Your"} ${values.contactInformation?.lastName ?? "Name"}`}</h2>
+                            <h3>{values.currentRole || "Professional title"}</h3>
                             <p className={styles.contact}>
-                                {values.email} · {values.phone}
+                                {values.contactInformation?.email} · {values.contactInformation?.phone}
                                 <br />
-                                {values.location}
+                                {values.contactInformation?.address}
                             </p>
                             <div className={styles.previewLine} />
                             <h4>Profile</h4>
-                            <p>{values.summary}</p>
+                            <p>{values.summary?.profSummary}</p>
                             <h4>Experience</h4>
                             <div className="mt-2 h-1 w-3/4 bg-[#e3e9e5]" />
                             <div className="mt-2 h-1 w-full bg-[#e3e9e5]" />
