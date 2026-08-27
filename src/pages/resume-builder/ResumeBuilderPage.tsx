@@ -1,8 +1,9 @@
 import { ArrowLeft, Check, FileText, Plus, Save, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch, useFieldArray } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import BuilderSidebar from "../../components/resume-builder/BuilderSidebar";
+import ConfirmDialog from "../../components/confirm-dialog/ConfirmDialog";
 import styles from "./ResumeBuilderPage.module.css";
 import {
     defaultResumes,
@@ -38,7 +39,8 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     }
     const [activeSection, setActiveSection] = useState("Basics");
     const [saved, setSaved] = useState(false);
-    const { control, register, setValue, handleSubmit, formState: { errors },} = useForm<BuilderValues>({ defaultValues: initialValues });
+    const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+    const { control, register, setValue, handleSubmit, formState: { errors, isDirty },} = useForm<BuilderValues>({ defaultValues: initialValues });
     const values = useWatch({ control });
     const { fields, append, remove } = useFieldArray({
         name: "experience",
@@ -52,6 +54,15 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
         name: "projects",
         control,
     });
+
+    useEffect(() => {
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            if (!isDirty || saved) return;
+            event.preventDefault();
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [isDirty, saved]);
 
     if (mode === "edit" && resumeId && !existingResume) {
         return (
@@ -97,6 +108,17 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
         window.setTimeout(() => navigate("/resumes"), 500);
     };
 
+    const requestExit = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        if (!isDirty || saved) return;
+        event.preventDefault();
+        setShowUnsavedDialog(true);
+    };
+
+    const discardChanges = () => {
+        setShowUnsavedDialog(false);
+        navigate("/resumes");
+    };
+
     const fieldClass =
         "h-11 w-full rounded-lg border border-[#d5dfda] bg-white px-3 text-sm text-[#18232b] outline-none transition placeholder:text-[#a2adaa] focus:border-[#e07f6c] focus:ring-4 focus:ring-[#e07f6c]/10";
 
@@ -119,6 +141,7 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                         <Link
                             className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-[#6c7975] hover:bg-[#f1f4f1]"
                             to="/resumes"
+                            onClick={requestExit}
                         >
                             <ArrowLeft size={14} /> Exit
                         </Link>
@@ -318,6 +341,7 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                     </aside>
                 </div>
             </section>
+            {showUnsavedDialog ? <ConfirmDialog title="Leave without saving?" confirmMessage="You have unsaved resume changes. Leave this page and discard them?" confirmLabel="Leave without saving" cancelLabel="Continue editing" onConfirm={discardChanges} onCancel={() => setShowUnsavedDialog(false)} /> : null}
         </main>
     );
 }

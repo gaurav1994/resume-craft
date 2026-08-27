@@ -61,7 +61,7 @@ h1,
 h2 {
   font-family: var(--heading);
   font-weight: 500;
-  color: var(--bg);
+  color: var(--shadow);
 }
 
 h1 {

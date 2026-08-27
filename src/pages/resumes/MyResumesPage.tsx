@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styles from './MyResumesPage.module.css'
 import { getResumes, saveResumes, type Resume } from './resumeStore'
-import DeleteConfirmDialog from '../../components/delete-confirm-dialog/DeleteConfirmDialog'
+import ConfirmDialog from '../../components/confirm-dialog/ConfirmDialog'
 
 function ResumePreview() {
   return (
@@ -82,7 +82,7 @@ function MyResumesPage() {
           </div>
         )}
       </div>
-      {resumeToDelete ? <DeleteConfirmDialog confirmMessage={<>You&apos;re about to permanently remove <strong>{resumeToDelete.title}</strong>. This action cannot be undone.</>} onConfirm={handleDelete} onCancel={() => setResumeToDelete(null)} /> : null}
+      {resumeToDelete ? <ConfirmDialog confirmMessage={<>You&apos;re about to permanently remove <strong>{resumeToDelete.title}</strong>. This action cannot be undone.</>} onConfirm={handleDelete} onCancel={() => setResumeToDelete(null)} /> : null}
     </main>
   )
 }
