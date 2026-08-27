@@ -1,10 +1,10 @@
 .app-shell {
 	min-height: 100vh;
-	color: #2f273d;
+	color: #18232b;
 	background:
-		radial-gradient(circle at 12% 18%, rgba(212, 250, 211, 0.7), transparent 30%),
-		radial-gradient(circle at 88% 72%, rgba(255, 226, 198, 0.62), transparent 30%),
-		#faf9fc;
+		radial-gradient(circle at 9% 12%, rgba(221, 239, 228, 0.8), transparent 28%),
+		radial-gradient(circle at 92% 78%, rgba(250, 226, 217, 0.7), transparent 30%),
+		#f4f6f4;
 }
 
 .app-content {
