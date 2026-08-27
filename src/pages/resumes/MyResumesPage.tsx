@@ -23,7 +23,7 @@ function MyResumesPage() {
   const [query, setQuery] = useState('')
   const [resumes, setResumes] = useState<Resume[]>(() => getResumes())
   const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null)
-  const visibleResumes = resumes.filter((resume) => `${resume.title} ${resume.role}`.toLowerCase().includes(query.toLowerCase()))
+  const visibleResumes = resumes.filter((resume) => `${resume.title} ${resume.currentRole}`.toLowerCase().includes(query.toLowerCase()))
 
   const handleDelete = () => {
     if (!resumeToDelete) return
@@ -63,7 +63,7 @@ function MyResumesPage() {
                 <ResumePreview />
                 <div className={styles.cardBody}>
                   <h2 className={styles.cardTitle}>{resume.title}</h2>
-                  <p className={styles.meta}>{resume.role}</p>
+                  <p className={styles.meta}>{resume.currentRole}</p>
                   <p className={`${styles.meta} flex items-center gap-1`}><CalendarDays size={12} aria-hidden="true" /> {resume.updated}</p>
                   <div className={styles.actions}>
                     <Link className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-[#2f273d] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#51409a]" to={`/resumes/${resume.id}/edit`}><Pencil size={13} aria-hidden="true" /> Edit</Link>

@@ -11,7 +11,7 @@ import {
     type Resume,
 } from "../resumes/resumeStore";
 
-type BuilderValues = Pick<Resume, "title" | "contactInformation" | "summary" | "experience" | "currentRole" | "updated">;
+type BuilderValues = Pick<Resume, "title" | "contactInformation" | "summary" | "experience" | "projects" | "education" | "skills" | "currentRole" | "updated">;
 type ResumeBuilderPageProps = Readonly<{ mode?: "create" | "edit" }>;
 
 const blankResume: BuilderValues = {
@@ -21,6 +21,9 @@ const blankResume: BuilderValues = {
     contactInformation: { firstName: "Your", lastName: "Name", email: "you@example.com", phone: "+91 00000 00000", website: "", address: "Your city" },
     summary: { headline: "A clear headline for your career story", profSummary: "A concise introduction that connects your experience to the role you want next." },
     experience: [],
+    projects: [],
+    education: [],
+    skills: [],
 };
 
 function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
@@ -35,10 +38,18 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     }
     const [activeSection, setActiveSection] = useState("Basics");
     const [saved, setSaved] = useState(false);
-    const { control, register, handleSubmit, formState: { errors },} = useForm<BuilderValues>({ defaultValues: initialValues });
+    const { control, register, setValue, handleSubmit, formState: { errors },} = useForm<BuilderValues>({ defaultValues: initialValues });
     const values = useWatch({ control });
     const { fields, append, remove } = useFieldArray({
         name: "experience",
+        control,
+    });
+    const { fields: educationFields, append: appendEducation, remove: removeEducation } = useFieldArray({
+        name: "education",
+        control,
+    });
+    const { fields: projectFields, append: appendProject, remove: removeProject } = useFieldArray({
+        name: "projects",
         control,
     });
 
@@ -76,11 +87,6 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
             ...formValues,
             id,
             updated: "Updated just now",
-            fullName: `${formValues.contactInformation.firstName} ${formValues.contactInformation.lastName}`.trim(),
-            role: formValues.currentRole,
-            email: formValues.contactInformation.email,
-            phone: formValues.contactInformation.phone,
-            location: formValues.contactInformation.address,
         };
         saveResumes(
             existingResume
@@ -259,6 +265,33 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                                 ))}
                                 <button className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#e07f6c] px-4 py-3 text-sm font-extrabold text-[#c86d5c] transition hover:bg-[#fff4f1]" type="button" onClick={() => append({ company: "", designation: "", date: "", details: "" })}><Plus size={16} /> Add experience</button>
                                 {fields.length === 0 && <p className="text-sm text-[#798582]">No experience added yet. Start with your most recent role.</p>}
+                            </div>
+                        )}
+                        {activeSection === "Projects" && (
+                            <div className={`${styles.formFields} space-y-5`}>
+                                {projectFields.map((field, index) => <fieldset className="rounded-xl border border-[#d5dfda] bg-white p-5" key={field.id}><div className="mb-4 flex items-center justify-between gap-3"><legend className="text-sm font-extrabold text-[#18232b]">Project {index + 1}</legend><button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold text-[#b75545] hover:bg-[#fbe8e2]" type="button" onClick={() => removeProject(index)}><Trash2 size={13} /> Remove</button></div><div className="grid gap-4 sm:grid-cols-2"><label className="block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Project title</span><input className={fieldClass} placeholder="Project name" {...register(`projects.${index}.projectTitle`)} /></label><label className="block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Project URL</span><input className={fieldClass} placeholder="https://project.example" {...register(`projects.${index}.url`)} /></label><label className="block sm:col-span-2"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Dates</span><input className={fieldClass} placeholder="Jan 2024 to Present" {...register(`projects.${index}.date`)} /></label></div><label className="mt-4 block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Details</span><textarea className="min-h-24 w-full resize-y rounded-lg border border-[#d5dfda] bg-white px-3 py-3 text-sm leading-6 text-[#18232b] outline-none transition focus:border-[#e07f6c] focus:ring-4 focus:ring-[#e07f6c]/10" {...register(`projects.${index}.details`)} /></label></fieldset>)}
+                                <button className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#e07f6c] px-4 py-3 text-sm font-extrabold text-[#c86d5c] transition hover:bg-[#fff4f1]" type="button" onClick={() => appendProject({ projectTitle: "", url: "", date: "", details: "" })}><Plus size={16} /> Add project</button>
+                            </div>
+                        )}
+                        {activeSection === "Education" && (
+                            <div className={`${styles.formFields} space-y-5`}>
+                                {educationFields.map((field, index) => (
+                                    <fieldset className="rounded-xl border border-[#d5dfda] bg-white p-5" key={field.id}>
+                                        <div className="mb-4 flex items-center justify-between gap-3"><legend className="text-sm font-extrabold text-[#18232b]">Education {index + 1}</legend><button className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold text-[#b75545] hover:bg-[#fbe8e2]" type="button" onClick={() => removeEducation(index)}><Trash2 size={13} /> Remove</button></div>
+                                        <div className="grid gap-4 sm:grid-cols-2"><label className="block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Institute</span><input className={fieldClass} placeholder="Institute name" {...register(`education.${index}.institute`)} /></label><label className="block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Degree</span><input className={fieldClass} placeholder="Degree or certification" {...register(`education.${index}.degree`)} /></label><label className="block sm:col-span-2"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Dates</span><input className={fieldClass} placeholder="2019 to 2022" {...register(`education.${index}.date`)} /></label></div>
+                                        <label className="mt-4 block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Details</span><textarea className="min-h-24 w-full resize-y rounded-lg border border-[#d5dfda] bg-white px-3 py-3 text-sm leading-6 text-[#18232b] outline-none transition focus:border-[#e07f6c] focus:ring-4 focus:ring-[#e07f6c]/10" placeholder="Focus, achievements, or coursework" {...register(`education.${index}.details`)} /></label>
+                                    </fieldset>
+                                ))}
+                                <button className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#e07f6c] px-4 py-3 text-sm font-extrabold text-[#c86d5c] transition hover:bg-[#fff4f1]" type="button" onClick={() => appendEducation({ institute: "", degree: "", date: "", details: "" })}><Plus size={16} /> Add education</button>
+                                {educationFields.length === 0 && <p className="text-sm text-[#798582]">No education added yet.</p>}
+                            </div>
+                        )}
+                        {activeSection === "Skills" && (
+                            <div className={`${styles.formFields} space-y-5`}>
+                                <label className="block"><span className="mb-2 block text-xs font-extrabold uppercase tracking-wide text-[#65736e]">Skills</span>
+                                <textarea className="min-h-32 w-full resize-y rounded-lg border border-[#d5dfda] bg-white px-3 py-3 text-sm leading-6 text-[#18232b] outline-none transition focus:border-[#e07f6c] focus:ring-4 focus:ring-[#e07f6c]/10" placeholder="Java&#10;Spring Boot&#10;AWS" 
+                                value={values.skills?.join("\n") ?? ""} onChange={(event) => setValue("skills", event.target.value.split("\n").filter(Boolean))} /></label>
+                                <p className="text-sm leading-6 text-[#798582]">Add one skill per line. They will be saved as a string array.</p>
                             </div>
                         )}
                     </form>

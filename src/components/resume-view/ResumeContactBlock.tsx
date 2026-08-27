@@ -5,9 +5,9 @@ type ResumeContactBlockProps = Readonly<{ resume: Resume }>
 
 function ResumeContactBlock({ resume }: ResumeContactBlockProps) {
   const contacts = [
-    { value: resume.email, icon: Mail },
-    { value: resume.phone, icon: Phone },
-    { value: resume.location, icon: MapPin },
+    { value: resume.contactInformation.email, icon: Mail },
+    { value: resume.contactInformation.phone, icon: Phone },
+    { value: resume.contactInformation.address, icon: MapPin },
   ]
 
   return (

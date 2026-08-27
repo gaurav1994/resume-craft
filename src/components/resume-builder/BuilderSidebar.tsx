@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, FileText, GraduationCap, Sparkles, UserRound } from 'lucide-react'
+import { BriefcaseBusiness, FileText, FolderKanban, GraduationCap, Sparkles, UserRound } from 'lucide-react'
 import styles from './BuilderSidebar.module.css'
 
 type BuilderSidebarProps = Readonly<{ activeSection: string; onSelect: (section: string) => void }>
@@ -7,6 +7,7 @@ const sections = [
   { label: 'Basics', icon: UserRound },
   { label: 'Summary', icon: FileText },
   { label: 'Experience', icon: BriefcaseBusiness },
+  { label: 'Projects', icon: FolderKanban },
   { label: 'Education', icon: GraduationCap },
   { label: 'Skills', icon: Sparkles },
 ]
