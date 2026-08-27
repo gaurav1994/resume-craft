@@ -1,3 +1,5 @@
+import { appConfig } from '../../config/env'
+
 export type ContactInformation = {
   firstName: string
   lastName: string
@@ -34,7 +36,7 @@ export type Resume = {
   location: string
 }
 
-export const resumesStorageKey = 'resumecraft-resumes'
+export const resumesStorageKey = `resumecraft-resumes-${appConfig.environment}`
 
 export const defaultResumes: Resume[] = [
   {

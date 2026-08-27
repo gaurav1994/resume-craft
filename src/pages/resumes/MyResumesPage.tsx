@@ -2,7 +2,8 @@ import { CalendarDays, Eye, FileText, Pencil, Plus, Search, Trash2 } from 'lucid
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styles from './MyResumesPage.module.css'
-import { getResumes, type Resume } from './resumeStore'
+import { getResumes, saveResumes, type Resume } from './resumeStore'
+import DeleteConfirmDialog from '../../components/delete-confirm-dialog/DeleteConfirmDialog'
 
 function ResumePreview() {
   return (
@@ -20,8 +21,17 @@ function ResumePreview() {
 
 function MyResumesPage() {
   const [query, setQuery] = useState('')
-  const [resumes] = useState<Resume[]>(() => getResumes())
+  const [resumes, setResumes] = useState<Resume[]>(() => getResumes())
+  const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null)
   const visibleResumes = resumes.filter((resume) => `${resume.title} ${resume.role}`.toLowerCase().includes(query.toLowerCase()))
+
+  const handleDelete = () => {
+    if (!resumeToDelete) return
+    const nextResumes = resumes.filter((resume) => resume.id !== resumeToDelete.id)
+    setResumes(nextResumes)
+    saveResumes(nextResumes)
+    setResumeToDelete(null)
+  }
 
   return (
     <main className={styles.page}>
@@ -58,7 +68,7 @@ function MyResumesPage() {
                   <div className={styles.actions}>
                     <Link className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-[#2f273d] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#51409a]" to={`/resumes/${resume.id}/edit`}><Pencil size={13} aria-hidden="true" /> Edit</Link>
                     <Link className="inline-flex items-center justify-center rounded-md border border-[#e4e0eb] bg-white px-3 py-2 text-[#7657d8] transition hover:bg-[#f2effb]" to={`/resumes/${resume.id}/view`} aria-label={`View ${resume.title}`}><Eye size={15} aria-hidden="true" /></Link>
-                    <button className="inline-flex items-center justify-center rounded-md border border-[#e4e0eb] bg-white px-3 py-2 text-[#a87883] transition hover:bg-[#fff3f4]" type="button" aria-label={`Delete ${resume.title}`}><Trash2 size={15} aria-hidden="true" /></button>
+                    <button className="inline-flex items-center justify-center rounded-md border border-[#e4e0eb] bg-white px-3 py-2 text-[#a87883] transition hover:bg-[#fff3f4]" type="button" aria-label={`Delete ${resume.title}`} onClick={() => setResumeToDelete(resume)}><Trash2 size={15} aria-hidden="true" /></button>
                   </div>
                 </div>
               </article>
@@ -72,6 +82,7 @@ function MyResumesPage() {
           </div>
         )}
       </div>
+      {resumeToDelete ? <DeleteConfirmDialog confirmMessage={<>You&apos;re about to permanently remove <strong>{resumeToDelete.title}</strong>. This action cannot be undone.</>} onConfirm={handleDelete} onCancel={() => setResumeToDelete(null)} /> : null}
     </main>
   )
 }

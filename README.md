@@ -1,5 +1,18 @@
 # React + TypeScript + Vite
 
+## Environments
+
+Vite loads environment values from `.env.development` and `.env.production` based on the selected mode. Copy `.env.example` when adding a new local setup, and keep secrets out of the repository.
+
+```bash
+npm run dev       # development server and development values
+npm run build:dev # development build
+npm run build     # production build
+npm run build:prod
+```
+
+Client-visible variables must use the `VITE_` prefix. They are available through the typed `appConfig` object in `src/config/env.ts`.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

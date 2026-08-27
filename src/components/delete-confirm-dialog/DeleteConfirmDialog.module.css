@@ -1,0 +1,87 @@
+.backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  background: rgba(24, 35, 43, 0.48);
+  backdrop-filter: blur(5px);
+}
+
+.dialog {
+  width: min(100%, 440px);
+  position: relative;
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #e5e9e6;
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(24, 35, 43, 0.24);
+  animation: dialog-in 180ms ease-out;
+}
+
+.icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  color: #b75545;
+  background: #fbe8e2;
+  border-radius: 12px;
+}
+
+.heading {
+  margin: 20px 0 0;
+  color: #18232b;
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.message {
+  margin-top: 9px;
+  color: #71807a;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.cancel,
+.confirm {
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cancel {
+  color: #60706a;
+  background: #fff;
+  border: 1px solid #dbe3de;
+}
+
+.cancel:hover { background: #f5f8f5; }
+
+.confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  background: #b75545;
+  border: 1px solid #b75545;
+}
+
+.confirm:hover { background: #994536; }
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
