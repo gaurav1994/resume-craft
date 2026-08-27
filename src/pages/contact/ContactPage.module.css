@@ -1,0 +1,40 @@
+.page {
+  min-height: calc(100vh - 99px);
+  padding: 68px 24px 100px;
+  background: transparent;
+}
+
+.layout {
+  width: min(100%, 1060px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(360px, 1fr);
+  gap: 72px;
+  align-items: start;
+}
+
+.intro { padding-top: 20px; }
+.heading { margin: 0; color: #18232b; font-family: Georgia, serif; font-size: clamp(42px, 6vw, 70px); font-weight: 700; letter-spacing: -2px; line-height: 1; }
+.description { max-width: 400px; margin-top: 20px; color: #71807a; font-size: 16px; line-height: 1.7; }
+.note { max-width: 330px; margin-top: 44px; padding-left: 14px; color: #697872; border-left: 3px solid #f2a38f; font-size: 13px; line-height: 1.65; }
+
+.formCard { padding: 30px; background: rgba(255, 255, 255, 0.92); border: 1px solid #dce4df; border-radius: 16px; box-shadow: 0 18px 40px rgba(24, 35, 43, 0.09); }
+.field { display: block; margin-top: 20px; }
+.field:first-child { margin-top: 0; }
+.label { display: block; margin-bottom: 8px; color: #52625c; font-size: 12px; font-weight: 800; letter-spacing: 0.3px; }
+.input, .textarea { width: 100%; box-sizing: border-box; color: #18232b; background: #fbfcfb; border: 1px solid #d4dfd9; border-radius: 8px; outline: 0; font: inherit; font-size: 14px; transition: border-color 160ms ease, box-shadow 160ms ease; }
+.input { height: 46px; padding: 0 13px; }
+.textarea { min-height: 150px; padding: 12px 13px; resize: vertical; line-height: 1.6; }
+.input:focus, .textarea:focus { border-color: #d97964; box-shadow: 0 0 0 4px rgba(217, 121, 100, 0.12); }
+.error { display: block; margin-top: 5px; color: #b75545; font-size: 12px; }
+.submit { width: 100%; min-height: 46px; margin-top: 24px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: #fff; background: #18232b; border: 0; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; transition: background 160ms ease, transform 160ms ease; }
+.submit:hover { background: #d97964; transform: translateY(-1px); }
+.success { padding: 18px; color: #316148; background: #edf7ef; border: 1px solid #c9e5cf; border-radius: 9px; font-size: 14px; line-height: 1.6; }
+
+@media (max-width: 780px) {
+  .page { padding: 42px 16px 80px; }
+  .layout { display: block; }
+  .intro { padding-top: 0; }
+  .note { margin-top: 30px; }
+  .formCard { margin-top: 38px; padding: 22px 18px; }
+}

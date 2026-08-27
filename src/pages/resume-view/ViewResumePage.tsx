@@ -4,7 +4,7 @@ import ResumeContactBlock from '../../components/resume-view/ResumeContactBlock'
 import ResumeViewHeader from '../../components/resume-view/ResumeViewHeader'
 import ResumeViewSection from '../../components/resume-view/ResumeViewSection'
 import styles from './ViewResumePage.module.css'
-import { getResumes } from './resumeStore'
+import { getResumes } from '../resumes/resumeStore'
 
 function ViewResumePage() {
   const { resumeId } = useParams()

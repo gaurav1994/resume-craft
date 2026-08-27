@@ -1,4 +1,4 @@
-import { FileText, LayoutDashboard, Menu, Sparkles, X } from 'lucide-react'
+import { FileText, LayoutDashboard, Mail, Menu, Sparkles, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import styles from './Navbar.module.css'
@@ -13,6 +13,7 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
   { label: 'My resumes', href: '/resumes', icon: FileText },
   { label: 'Templates', href: '/templates', icon: Sparkles },
+  { label: 'Contact us', href: '/contact', icon: Mail },
 ]
 
 function Navbar() {
