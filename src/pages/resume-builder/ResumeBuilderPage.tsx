@@ -5,12 +5,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import BuilderSidebar from "../../components/resume-builder/BuilderSidebar";
 import ConfirmDialog from "../../components/confirm-dialog/ConfirmDialog";
 import styles from "./ResumeBuilderPage.module.css";
-import {
-    defaultResumes,
-    getResumes,
-    saveResumes,
-    type Resume,
-} from "../resumes/resumeStore";
+import { BACKEND_UNAVAILABLE_MESSAGE, getApiErrorMessage } from '../../services/apiError'
+import { createResume, fetchResumeById, updateResume } from "../../services/resumeService";
+import { type Resume } from "../resumes/resumeStore";
 
 type BuilderValues = Pick<Resume, "title" | "contactInformation" | "summary" | "experience" | "projects" | "education" | "skills" | "currentRole" | "updated">;
 type ResumeBuilderPageProps = Readonly<{ mode?: "create" | "edit" }>;
@@ -30,17 +27,47 @@ const blankResume: BuilderValues = {
 function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
     const { resumeId } = useParams();
     const navigate = useNavigate();
-    const existingResume = mode === "edit" && resumeId ? getResumes().find((item) => item.id === Number(resumeId)) : undefined;
-    let initialValues: BuilderValues | undefined;
-    if (existingResume) {
-        initialValues = existingResume;
-    } else if (mode === "create") {
-        initialValues = blankResume;
-    }
+    const [existingResume, setExistingResume] = useState<Resume | undefined>(undefined);
+    const [loadingResume, setLoadingResume] = useState(mode === "edit");
     const [activeSection, setActiveSection] = useState("Basics");
     const [saved, setSaved] = useState(false);
     const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
-    const { control, register, setValue, handleSubmit, formState: { errors, isDirty },} = useForm<BuilderValues>({ defaultValues: initialValues });
+    const [error, setError] = useState('');
+    const { control, register, setValue, handleSubmit, reset, formState: { errors, isDirty },} = useForm<BuilderValues>({ defaultValues: mode === "create" ? blankResume : undefined });
+
+    useEffect(() => {
+        if (mode !== "edit" || !resumeId) {
+            if (mode === "create") {
+                reset(blankResume)
+            }
+            return
+        }
+
+        let ignore = false
+        setLoadingResume(true)
+
+        fetchResumeById(resumeId)
+            .then((resume) => {
+                if (!ignore) {
+                    setExistingResume(resume)
+                    setLoadingResume(false)
+                    setError('')
+                    if (resume) {
+                        reset(resume)
+                    }
+                }
+            })
+            .catch((err) => {
+                if (!ignore) {
+                    setLoadingResume(false)
+                    setError(getApiErrorMessage(err))
+                }
+            })
+
+        return () => {
+            ignore = true
+        }
+    }, [mode, resumeId, reset])
     const values = useWatch({ control });
     const { fields, append, remove } = useFieldArray({
         name: "experience",
@@ -64,7 +91,7 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     }, [isDirty, saved]);
 
-    if (mode === "edit" && resumeId && !existingResume) {
+    if (mode === "edit" && resumeId && !loadingResume && !existingResume) {
         return (
             <main className={styles.page}>
                 <div className="mx-auto max-w-295">
@@ -83,29 +110,27 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
         );
     }
 
-    const onSubmit = (formValues: BuilderValues) => {
-        console.log(formValues);
-        
-        const current = getResumes();
-        const id =
-            existingResume?.id ??
-            Math.max(
-                ...current.map((item) => item.id),
-                ...defaultResumes.map((item) => item.id),
-            ) + 1;
+    const onSubmit = async (formValues: BuilderValues) => {
         const nextResume: Resume = {
-            ...(existingResume ?? defaultResumes[0]),
+            ...(existingResume ?? blankResume as Resume),
             ...formValues,
-            id,
+            id: existingResume?.id ?? Date.now(),
             updated: "Updated just now",
         };
-        saveResumes(
-            existingResume
-                ? current.map((item) => (item.id === id ? nextResume : item))
-                : [...current, nextResume],
-        );
-        setSaved(true);
-        window.setTimeout(() => navigate("/resumes"), 500);
+
+        try {
+            if (existingResume) {
+                await updateResume(nextResume)
+            } else {
+                await createResume(nextResume)
+            }
+
+            setError('')
+            setSaved(true);
+            window.setTimeout(() => navigate("/resumes"), 500);
+        } catch (err) {
+            setError(getApiErrorMessage(err))
+        }
     };
 
     const requestExit = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -165,6 +190,11 @@ function ResumeBuilderPage({ mode }: ResumeBuilderPageProps) {
                         className={styles.formPane}
                         onSubmit={handleSubmit(onSubmit)}
                     >
+                        {error ? (
+                            <div className="mb-4 rounded-lg border border-[#e4b5ac] bg-[#fff5f3] px-4 py-3 text-sm font-bold text-[#a74a40]">
+                                {error === BACKEND_UNAVAILABLE_MESSAGE ? error : BACKEND_UNAVAILABLE_MESSAGE}
+                            </div>
+                        ) : null}
                         <div className={styles.formHeader}>
                             <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[1.8px] text-[#e07f6c]">
                                 Section {activeSection}

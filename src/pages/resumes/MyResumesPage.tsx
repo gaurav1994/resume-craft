@@ -1,9 +1,11 @@
 import { CalendarDays, Eye, FileText, Pencil, Plus, Search, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styles from './MyResumesPage.module.css'
-import { getResumes, saveResumes, type Resume } from './resumeStore'
+import type { Resume } from './resumeStore'
 import ConfirmDialog from '../../components/confirm-dialog/ConfirmDialog'
+import { getApiErrorMessage, BACKEND_UNAVAILABLE_MESSAGE } from '../../services/apiError'
+import { deleteResume, fetchResumes } from '../../services/resumeService'
 
 function ResumePreview() {
   return (
@@ -21,16 +23,45 @@ function ResumePreview() {
 
 function MyResumesPage() {
   const [query, setQuery] = useState('')
-  const [resumes, setResumes] = useState<Resume[]>(() => getResumes())
+  const [resumes, setResumes] = useState<Resume[]>([])
   const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null)
+  const [error, setError] = useState('')
   const visibleResumes = resumes.filter((resume) => `${resume.title} ${resume.currentRole}`.toLowerCase().includes(query.toLowerCase()))
 
-  const handleDelete = () => {
+  useEffect(() => {
+    let ignore = false
+
+    fetchResumes()
+      .then((items) => {
+        if (!ignore) {
+          setError('')
+          setResumes(items)
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setError(getApiErrorMessage(err))
+        }
+      })
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
+  const handleDelete = async () => {
     if (!resumeToDelete) return
-    const nextResumes = resumes.filter((resume) => resume.id !== resumeToDelete.id)
-    setResumes(nextResumes)
-    saveResumes(nextResumes)
-    setResumeToDelete(null)
+
+    try {
+      await deleteResume(resumeToDelete.id)
+
+      const nextResumes = resumes.filter((resume) => resume.id !== resumeToDelete.id)
+      setResumes(nextResumes)
+      setResumeToDelete(null)
+      setError('')
+    } catch (err) {
+      setError(getApiErrorMessage(err))
+    }
   }
 
   return (
@@ -55,6 +86,12 @@ function MyResumesPage() {
           </label>
           <span className={styles.count}>{visibleResumes.length} {visibleResumes.length === 1 ? 'resume' : 'resumes'}</span>
         </div>
+
+        {error ? (
+          <div className="mt-4 rounded-lg border border-[#e4b5ac] bg-[#fff5f3] px-4 py-3 text-sm font-bold text-[#a74a40]">
+            {error === BACKEND_UNAVAILABLE_MESSAGE ? error : BACKEND_UNAVAILABLE_MESSAGE}
+          </div>
+        ) : null}
 
         {visibleResumes.length > 0 ? (
           <div className={styles.grid}>

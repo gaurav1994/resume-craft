@@ -1,14 +1,59 @@
 import { ArrowLeft, BriefcaseBusiness, GraduationCap, Sparkles } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ResumeContactBlock from '../../components/resume-view/ResumeContactBlock'
 import ResumeViewHeader from '../../components/resume-view/ResumeViewHeader'
 import ResumeViewSection from '../../components/resume-view/ResumeViewSection'
 import styles from './ViewResumePage.module.css'
-import { getResumes } from '../resumes/resumeStore'
+import { BACKEND_UNAVAILABLE_MESSAGE, getApiErrorMessage } from '../../services/apiError'
+import { fetchResumeById } from '../../services/resumeService'
+import type { Resume } from '../resumes/resumeStore'
 
 function ViewResumePage() {
   const { resumeId } = useParams()
-  const resume = getResumes().find((item) => item.id === Number(resumeId))
+  const [resume, setResume] = useState<Resume | undefined>(undefined)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let ignore = false
+
+    if (!resumeId) {
+      return () => {
+        ignore = true
+      }
+    }
+
+    fetchResumeById(resumeId)
+      .then((item) => {
+        if (!ignore) {
+          setError('')
+          setResume(item)
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setError(getApiErrorMessage(err))
+          setResume(undefined)
+        }
+      })
+
+    return () => {
+      ignore = true
+    }
+  }, [resumeId])
+
+  if (error) {
+    return (
+      <main className={styles.page}>
+        <div className="mx-auto max-w-225">
+          <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[1.8px] text-[#d97964]">ResumeCraft</p>
+          <h1 className="font-serif text-5xl font-bold text-[#18232b]">{BACKEND_UNAVAILABLE_MESSAGE}</h1>
+          <p className="mt-4 text-sm font-semibold text-[#66756f]">{error}</p>
+          <Link className="mt-8 inline-flex items-center gap-2 rounded-lg bg-[#18232b] px-5 py-3 text-sm font-bold text-white" to="/resumes"><ArrowLeft size={16} /> Back to resumes</Link>
+        </div>
+      </main>
+    )
+  }
 
   if (!resume) {
     return (

@@ -1,5 +1,3 @@
-import { appConfig } from '../../config/env'
-
 export type ContactInformation = {
   firstName: string
   lastName: string
@@ -47,8 +45,6 @@ export type Resume = {
   currentRole: string
   updated: string
 }
-
-export const resumesStorageKey = `resumecraft-resumes-${appConfig.environment}`
 
 export const defaultResumes: Resume[] = [
   {
@@ -100,51 +96,3 @@ export const defaultResumes: Resume[] = [
   },
 ]
 
-export function getResumes(): Resume[] {
-  const stored = window.localStorage.getItem(resumesStorageKey)
-  if (!stored) return defaultResumes
-
-  try {
-    const parsed = JSON.parse(stored) as Partial<Resume>[]
-    return parsed.map((resume) => ({
-      ...defaultResumes[0],
-      ...resume,
-      currentRole: resume.currentRole ?? '',
-      contactInformation: { ...defaultResumes[0].contactInformation, ...resume.contactInformation },
-      summary: { ...defaultResumes[0].summary, ...resume.summary },
-      skills: resume.skills ?? [],
-      education: resume.education ?? [],
-      experience: (resume.experience ?? []).map((item) => normalizeExperience(item)),
-      projects: (resume.projects ?? []).map((item) => normalizeProject(item)),
-    }))
-  } catch {
-    return defaultResumes
-  }
-}
-
-function normalizeExperience(item: unknown): Experience {
-  if (!item || typeof item !== 'object') return { company: '', designation: '', date: '', details: '' }
-
-  const record = item as Record<string, unknown>
-  return {
-    company: typeof record.company === 'string' ? record.company : '',
-    designation: typeof record.designation === 'string' ? record.designation : '',
-    date: typeof record.date === 'string' ? record.date : '',
-    details: typeof record.details === 'string' ? record.details : '',
-  }
-}
-
-function normalizeProject(item: unknown): Project {
-  if (!item || typeof item !== 'object') return { projectTitle: '', url: '', date: '', details: '' }
-  const record = item as Record<string, unknown>
-  return {
-    projectTitle: typeof record.projectTitle === 'string' ? record.projectTitle : '',
-    url: typeof record.url === 'string' ? record.url : '',
-    date: typeof record.date === 'string' ? record.date : '',
-    details: typeof record.details === 'string' ? record.details : '',
-  }
-}
-
-export function saveResumes(resumes: Resume[]) {
-  window.localStorage.setItem(resumesStorageKey, JSON.stringify(resumes))
-}

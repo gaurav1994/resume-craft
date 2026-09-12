@@ -8,9 +8,24 @@ type ImportMetaEnvConfig = ImportMetaEnv & {
 
 const rawEnv = import.meta.env as ImportMetaEnvConfig
 
+const normalizeBaseUrl = (url = '') => {
+  let normalized = url
+
+  while (normalized.endsWith('/')) {
+    normalized = normalized.slice(0, -1)
+  }
+
+  return normalized
+}
+
 export const appConfig = {
   environment: (rawEnv.VITE_APP_ENV ?? import.meta.env.MODE) as AppEnvironment,
   apiBaseUrl: rawEnv.VITE_API_BASE_URL ?? '',
   enableMockData: rawEnv.VITE_ENABLE_MOCK_DATA === 'true',
   isProduction: import.meta.env.PROD,
 } as const
+
+export const backendApi = {
+  baseUrl: normalizeBaseUrl(appConfig.apiBaseUrl),
+  resumesUrl: `${normalizeBaseUrl(appConfig.apiBaseUrl)}/api/resumes`,
+}
