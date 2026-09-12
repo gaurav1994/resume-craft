@@ -1,19 +1,75 @@
-import { ArrowLeft, CalendarDays, FilePenLine } from 'lucide-react'
+import { ArrowLeft, CalendarDays, ChevronDown, Download, FilePenLine } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Resume } from '../../pages/resumes/resumeStore'
+import { downloadResumePdf } from '../../services/resumeService'
+import styles from './ResumeViewHeader.module.css'
 
 type ResumeViewHeaderProps = Readonly<{ resume: Resume }>
 
+type PdfTemplate = {
+  id: string
+  name: string
+  color: string
+}
+
+const pdfTemplates: PdfTemplate[] = [
+  { id: 'orange', name: 'Orange', color: '#d97964' },
+  { id: 'green', name: 'Green', color: '#658b69' },
+  { id: 'red', name: 'Red', color: '#b6524b' },
+  { id: 'purple', name: 'Purple', color: '#7657d8' },
+  { id: 'black', name: 'Black', color: '#18232b' },
+  { id: 'teal', name: 'Teal', color: '#3e8a8b' },
+]
+
 function ResumeViewHeader({ resume }: ResumeViewHeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState('orange')
+
+  const handleDownload = async (template: string) => {
+    setSelectedTemplate(template)
+    setMenuOpen(false)
+
+    try {
+      await downloadResumePdf(resume.id, template)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
-    <header className="flex flex-wrap items-start justify-between gap-5 border-b border-[#dfe5e0] pb-7">
-      <div>
-        <Link className="mb-7 inline-flex items-center gap-2 text-xs font-bold text-[#71807a] transition hover:text-[#d97964]" to="/resumes"><ArrowLeft size={14} /> Back to my resumes</Link>
-        <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[1.8px] text-[#d97964]">Resume preview</p>
-        <h1 className="m-0  text-4xl font-bold tracking-tight text-[#d97964] sm:text-5xl">{resume.title}</h1>
-        <p className="mt-3 flex items-center gap-1.5 text-xs text-[#87918d]"><CalendarDays size={13} /> {resume.updated}</p>
+    <header className={styles.header}>
+      <div className={styles.titleArea}>
+        <Link className={styles.backLink} to="/resumes"><ArrowLeft size={14} /> Back to my resumes</Link>
+        <p className={styles.kicker}>Resume preview</p>
+        <h1 className={styles.title}>{resume.title}</h1>
+        <p className={styles.updated}><CalendarDays size={13} /> {resume.updated}</p>
       </div>
-      <Link className="inline-flex items-center gap-2 rounded-lg bg-[#18232b] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#2c414a]" to={`/resumes/${resume.id}/edit`}><FilePenLine size={14} /> Edit resume</Link>
+
+      <div className={styles.actions}>
+        <div className={styles.pdfMenu}>
+          <button className={styles.pdfButton} onClick={() => setMenuOpen((open) => !open)}>
+            <Download size={14} /> Download PDF <ChevronDown className={`${styles.chevron} ${menuOpen ? styles.chevronOpen : ''}`} size={14} />
+          </button>
+          {menuOpen && (
+            <div className={styles.dropdown}>
+              <p className={styles.dropdownTitle}>Choose color template</p>
+              <div className={styles.templateGrid}>
+                {pdfTemplates.map((template) => (
+                  <button className={`${styles.templateOption} ${selectedTemplate === template.id ? styles.templateOptionActive : ''}`.trim()} key={template.id} onClick={() => handleDownload(template.id)}>
+                    <span className={styles.templateSwatchWrap}>
+                      <span className={styles.templateSwatch} style={{ backgroundColor: template.color }}></span>
+                    </span>
+                    <span className={styles.templateName}>{template.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Link className={styles.editLink} to={`/resumes/${resume.id}/edit`}><FilePenLine size={14} /> Edit resume</Link>
+      </div>
     </header>
   )
 }

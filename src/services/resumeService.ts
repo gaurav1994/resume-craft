@@ -189,6 +189,24 @@ export async function updateResume(resume: Resume): Promise<Resume | undefined> 
   }
 }
 
+export function downloadResumePdf(id: number | string, template = 'orange'): void {
+  if (!appConfig.apiBaseUrl) {
+    throw new ApiError(BACKEND_UNAVAILABLE_MESSAGE)
+  }
+
+  const downloadUrl = `${backendApi.resumesUrl}/${id}/pdf?template=${encodeURIComponent(template)}`
+
+  const anchor = document.createElement('a')
+  anchor.href = downloadUrl
+  anchor.target = '_blank'
+  anchor.rel = 'noopener noreferrer'
+  anchor.style.display = 'none'
+
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+}
+
 export async function deleteResume(id: number | string): Promise<boolean> {
   if (!appConfig.apiBaseUrl) {
     throw new ApiError(BACKEND_UNAVAILABLE_MESSAGE)
