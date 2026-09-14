@@ -3,13 +3,16 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 20
+      nodejs: 24.18.1
     commands:
+      - echo "Preparing static production deployment"
+      - test -n "$S3_BUCKET"
+      - test -n "$AWS_REGION"
       - npm install
 
   build:
     commands:
-      - npm run build
+      - npm run build:prod
 
 artifacts:
   files:
