@@ -13,7 +13,8 @@ phases:
       - npm run build
 
 artifacts:
+  base-directory: 'dist'
   files:
-    - 'dist/**/*'
+    - '**/*'
     - 'public/**/*'
   discard-paths: no
