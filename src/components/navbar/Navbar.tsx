@@ -24,7 +24,7 @@ function Navbar() {
       <nav className={styles.navbar} aria-label="Main navigation">
         <Link className={styles.brand} to="/" aria-label="ResumeCraft home">
           <span className={styles.brandMark}>RC</span>
-          <span className={styles.brandName}>ResumeCraft</span>
+          <span className={styles.brandName}>Resume Craft</span>
         </Link>
 
         <div id="main-navigation-links" className={`${styles.links} ${isMenuOpen ? styles.open : ''}`}>
